@@ -3,7 +3,7 @@ import os
 import uuid
 import shutil
 import asyncio
-
+import subprocess
 from pagespeed_insights2 import main as run_scraper
 from makedoc import generate_docx_from_advice
 from pagespeed_screenshot import capture_all_screenshots
@@ -20,6 +20,10 @@ if st.button("Run Audit") and url:
     os.makedirs(work_dir, exist_ok=True)
 
     with st.spinner("Running PageSpeed audit..."):
+        try:
+            subprocess.run(["playwright", "install"], check=True)
+        except Exception as e:
+            st.error(f"Could not install Playwright browsers: {e}")
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         advice, performance_data = loop.run_until_complete(run_scraper(url))
